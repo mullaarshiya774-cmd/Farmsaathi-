@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a3c2e">
+<title>FarmSaathi</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:rgba(46,125,50,0.2)}
+html,body{height:100%;overflow:hidden;background:#f5f0e8;font-family:system-ui,sans-serif;color:#2c1a0e}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+.hdr{background:linear-gradient(135deg,#1a3c2e,#2d6a4f);padding:44px 16px 14px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:8px}
+.logo b{color:#fff;font-size:21px;font-weight:800}
+.logo span{font-size:26px}
+.ltag{color:#6fcf97;font-size:9px;letter-spacing:3px;font-weight:700;margin-top:1px}
+.hright{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.hloc{color:rgba(255,255,255,.9);font-size:12px}
+.hssn{color:#a8dadc;font-size:11px}
+/* LANGUAGE BUTTON */
+.langbtn{background:rgba(255,255,255,0.2);border:1.5px solid rgba(255,255,255,0.4);border-radius:20px;padding:4px 10px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;display:flex;align-items:center;gap:4px}
+.langbtn:active{background:rgba(255,255,255,0.35)}
+/* LANGUAGE MODAL */
+.lang-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;display:none;align-items:flex-end;justify-content:center}
+.lang-overlay.show{display:flex}
+.lang-sheet{background:#fff;border-radius:24px 24px 0 0;padding:24px 20px 40px;width:100%;max-width:480px}
+.lang-title{font-size:16px;font-weight:800;color:#1a3c2e;margin-bottom:6px;text-align:center}
+.lang-sub{font-size:12px;color:#999;text-align:center;margin-bottom:20px}
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lang-opt{border-radius:14px;padding:16px;border:2.5px solid #e0d8cc;background:#f9f6f0;cursor:pointer;text-align:center;-webkit-appearance:none;touch-action:manipulation;transition:all .15s}
+.lang-opt:active{transform:scale(.95)}
+.lang-opt.selected{border-color:#1a3c2e;background:#e8f5e9}
+.lang-flag{font-size:28px;display:block;margin-bottom:6px}
+.lang-name{font-size:15px;font-weight:800;color:#1a3c2e;display:block}
+.lang-native{font-size:13px;color:#666;display:block;margin-top:2px}
+.lang-close{width:100%;margin-top:16px;padding:14px;background:linear-gradient(135deg,#1a3c2e,#52b788);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;-webkit-appearance:none;touch-action:manipulation}
+.lang-close:active{opacity:.85}
+#scroll{flex:1;overflow-y:scroll;-webkit-overflow-scrolling:touch;overflow-x:hidden}
+.scr{display:none;padding:14px 14px 30px}
+.scr.on{display:block}
+.bnav{display:flex;flex-shrink:0;background:#fff;border-top:2px solid #e8e0d4}
+.nt{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 2px 8px;background:transparent;border:none;border-top:3px solid transparent;cursor:pointer;-webkit-appearance:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.nt.on{border-top-color:#1a3c2e}
+.ni{font-size:22px;line-height:1.2}
+.nl{font-size:10px;font-weight:600;color:#aaa;margin-top:2px}
+.nt.on .nl{color:#1a3c2e}
+.sec{font-size:11px;color:#5c3d2e;font-weight:700;letter-spacing:2px;margin:18px 0 10px;text-transform:uppercase}
+.welcome{background:linear-gradient(135deg,#1a3c2e,#2d6a4f,#52b788);border-radius:18px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
+.welcome::after{content:'🌾';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:68px;opacity:.1;pointer-events:none}
+.wt{color:#fff;font-size:20px;font-weight:800}
+.ws{color:rgba(255,255,255,.82);font-size:13px;margin-top:4px}
+.wp{background:rgba(255,255,255,.18);border-radius:20px;padding:7px 14px;margin-top:12px;display:inline-block;color:#fff;font-size:13px}
+.qg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.qb{border-radius:14px;padding:16px 6px;text-align:center;border:none;cursor:pointer;-webkit-appearance:none;-webkit-user-select:none;user-select:none;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.qb:active{opacity:.75;transform:scale(.94)}
+.qi{font-size:28px}
+.ql{font-size:11px;font-weight:700}
+.tc{background:#fff;border-radius:14px;padding:16px;border:2px solid #f0a500;margin-bottom:12px}
+.tl{font-size:10px;color:#e8622a;font-weight:700;letter-spacing:2px;margin-bottom:8px}
+.tt{font-size:14px;line-height:1.6;min-height:44px;transition:opacity .3s}
+.ac{background:linear-gradient(135deg,#fffbeb,#fef3c7);border-radius:14px;padding:14px;border:2px solid #c9971a;margin-bottom:14px}
+.at2{font-size:13px;color:#92400e;font-weight:700}
+.ab{font-size:12px;color:#78350f;margin-top:4px;line-height:1.6}
+.pr{background:#fff;border-radius:12px;padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;border:1px solid #f0ebe3}
+.pi{font-size:26px;margin-right:12px}
+.pn{flex:1;font-size:14px;font-weight:600}
+.pv{font-size:16px;font-weight:800;color:#1a3c2e}
+.pc{font-size:11px;font-weight:700;text-align:right;margin-top:2px}
+.up{color:#1a7a40}.dn{color:#e63946}
+.vb{width:100%;padding:12px;background:transparent;border:2px dashed #52b788;border-radius:12px;color:#1a3c2e;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;-webkit-appearance:none;-webkit-user-select:none;touch-action:manipulation}
+.vb:active{background:#e8f5e9}
+#imgPrev{width:100%;border-radius:14px;max-height:180px;object-fit:cover;margin-bottom:14px;display:none}
+.cr{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.cb{border-radius:14px;padding:18px 10px;text-align:center;border:none;cursor:pointer;-webkit-appearance:none;-webkit-user-select:none;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
+.cb:active{opacity:.8;transform:scale(.95)}
+.ci{font-size:30px}
+.cl{font-size:13px;font-weight:700;color:#fff}
+.od{text-align:center;color:#bbb;font-size:12px;letter-spacing:2px;margin-bottom:16px}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cc{border-radius:14px;padding:16px;cursor:pointer;border-width:2.5px;border-style:solid;-webkit-appearance:none;-webkit-user-select:none;touch-action:manipulation}
+.cc:active{opacity:.8;transform:scale(.95)}
+.cti{font-size:15px;font-weight:700}
+.cde{font-size:11px;color:#888;margin-top:4px}
+.abox{text-align:center;padding:50px 20px}
+.aico{font-size:60px;display:block;margin-bottom:14px;animation:spin 1.2s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ati{font-size:18px;font-weight:800;color:#1a3c2e}
+.asu{font-size:13px;color:#999;margin-top:6px}
+.pb{height:5px;background:#e0d8cc;border-radius:10px;margin-top:24px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,#1a3c2e,#52b788);border-radius:10px;width:0;transition:width 2s linear}
+.dc{background:#fff;border-radius:18px;padding:18px;border-width:3px;border-style:solid;margin-bottom:12px}
+.dh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.dl{font-size:10px;color:#bbb;letter-spacing:2px}
+.dn2{font-size:15px;font-weight:700;margin-top:4px;line-height:1.35}
+.sb{border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;margin-left:8px;align-self:flex-start}
+.sx{background:#fff8f0;border-radius:10px;padding:12px;margin-bottom:14px}
+.sxl{font-size:10px;color:#e8622a;font-weight:700;letter-spacing:2px;margin-bottom:4px}
+.sxt{font-size:13px;line-height:1.6}
+.txl{font-size:11px;color:#1a3c2e;font-weight:700;letter-spacing:2px;margin-bottom:8px}
+.ti{display:flex;gap:8px;margin-bottom:8px}
+.tn{color:#52b788;font-weight:700;min-width:18px;font-size:13px}
+.tt2{font-size:13px;line-height:1.5;flex:1}
+.ub{background:#fffbeb;border-radius:10px;padding:10px 12px;margin-top:10px}
+.ut{font-size:13px;color:#92400e;font-weight:600}
+.prc{background:#e8f5ed;border-radius:14px;padding:14px;margin-bottom:12px;border:1px solid #52b788}
+.prl{font-size:10px;color:#1a3c2e;font-weight:700;letter-spacing:2px;margin-bottom:6px}
+.prt{font-size:13px;line-height:1.6}
+.aib{width:100%;padding:15px;border:none;border-radius:14px;background:linear-gradient(135deg,#1a3c2e,#52b788);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:12px;-webkit-appearance:none;touch-action:manipulation;-webkit-user-select:none}
+.aib:active{opacity:.85}
+.aib:disabled{opacity:.65}
+.acd{background:#e8f5ed;border-radius:14px;padding:16px;margin-bottom:12px;border:2px solid #52b788;display:none}
+.acl{font-size:10px;color:#1a3c2e;font-weight:700;letter-spacing:2px;margin-bottom:8px}
+.act{font-size:13px;line-height:1.7;white-space:pre-wrap}
+.hlc{background:#fff;border-radius:14px;padding:16px;text-align:center;margin-bottom:12px;border:1px solid #f0ebe3}
+.hlt{font-size:14px;font-weight:700}
+.hls{font-size:12px;color:#999;margin-top:3px}
+.hln{font-size:24px;font-weight:800;color:#1a3c2e;margin-top:6px}
+.rb{width:100%;padding:13px;background:transparent;border:2px solid #5c3d2e;border-radius:14px;color:#5c3d2e;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:20px;-webkit-appearance:none;touch-action:manipulation}
+.rb:active{background:#f5ede5}
+.wh{background:linear-gradient(135deg,#0a3d55,#1565C0,#42a5f5);border-radius:18px;padding:22px;margin-bottom:16px;color:#fff}
+.wlo{font-size:13px;opacity:.8}
+.wm{display:flex;align-items:flex-end;gap:10px;margin:10px 0}
+.wte{font-size:56px;font-weight:800;line-height:1}
+.wco{font-size:18px;padding-bottom:8px}
+.wsg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.ws2{background:rgba(255,255,255,.18);border-radius:10px;padding:10px;text-align:center}
+.wsi{font-size:18px;display:block}
+.wsl{font-size:9px;opacity:.75;display:block;margin-top:2px}
+.wsv{font-size:14px;font-weight:700;display:block;margin-top:2px}
+.wad{background:rgba(255,255,255,.15);border-radius:10px;padding:10px 12px;font-size:13px}
+.fr{background:#fff;border-radius:12px;padding:13px 14px;margin-bottom:8px;display:flex;align-items:center}
+.fr.td{border:2px solid #52b788;background:#f0faf4}
+.fd{width:46px;font-size:13px;font-weight:500}
+.fr.td .fd{font-weight:800;color:#1a3c2e}
+.fic{font-size:26px;margin:0 8px}
+.fm{flex:1}
+.fra{font-size:11px;color:#e8622a}
+.fw{font-size:10px;color:#bbb;margin-top:1px}
+.ft{text-align:right}
+.fh{font-size:16px;font-weight:700;color:#e8622a}
+.fl{font-size:12px;color:#bbb}
+.ar{background:#fff;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+.aic2{font-size:20px}
+.atx{flex:1;font-size:13px;line-height:1.5}
+.ady{font-weight:700;color:#1a3c2e}
+.sg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.sm{border-radius:12px;padding:12px;text-align:center;border-width:2px;border-style:solid}
+.smi{font-size:22px;display:block}
+.smv{font-size:13px;font-weight:700;display:block;margin-top:4px}
+.sml{font-size:9px;color:#999;display:block;margin-top:2px}
+.srb{background:#fff;border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px;border:2px solid #52b788;margin-bottom:12px}
+.srb input{flex:1;border:none;outline:none;font-size:14px;background:transparent;font-family:inherit}
+.fg{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.fb{padding:7px 14px;border-radius:20px;border:1.5px solid #ddd;background:#fff;font-size:12px;color:#777;cursor:pointer;font-family:inherit;font-weight:500;-webkit-appearance:none;touch-action:manipulation;-webkit-user-select:none}
+.fb:active{opacity:.8}
+.fb.on{background:#1a3c2e;border-color:#1a3c2e;color:#fff;font-weight:700}
+.mc{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:center;border-left:5px solid transparent}
+.mci{font-size:30px;margin-right:12px}
+.mcm{flex:1}
+.mcc{font-size:15px;font-weight:700}
+.mck{font-size:11px;color:#bbb;margin-top:3px}
+.mcr{text-align:right}
+.mcp{font-size:18px;font-weight:800;color:#1a3c2e}
+.mcu{font-size:10px;color:#bbb}
+.mch{display:inline-block;border-radius:10px;padding:3px 8px;font-size:11px;font-weight:700;margin-top:4px}
+.stp{display:flex;gap:10px;align-items:flex-start;background:#fff8f0;border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid #f4d090}
+.sti{font-size:18px}
+.stt{flex:1;font-size:13px;line-height:1.5}
+.fn{background:#f5f3ef;border-radius:12px;padding:12px;text-align:center;font-size:11px;color:#bbb;line-height:1.6;margin-top:8px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="hdr">
+  <div>
+    <div class="logo"><span>🌱</span><b>FarmSaathi</b></div>
+    <div class="ltag" id="tagline">YOUR SMART FARMING PARTNER</div>
+  </div>
+  <div class="hright">
+    <div class="hloc">📍 Telangana</div>
+    <div class="hssn" id="seasonTxt">Kharif 2026</div>
+    <button class="langbtn" onclick="openLang()">🌐 <span id="curLangLabel">EN</span> ▾</button>
+  </div>
+</div>
+
+<!-- LANGUAGE MODAL -->
+<div class="lang-overlay" id="langOverlay" onclick="closeLangOutside(event)">
+  <div class="lang-sheet">
+    <div class="lang-title" id="langTitle">Choose Your Language</div>
+    <div class="lang-sub" id="langSub">Select your preferred language</div>
+    <div class="lang-grid">
+      <button class="lang-opt" id="lopt-en" onclick="setLang('en')">
+        <span class="lang-flag">🇬🇧</span>
+        <span class="lang-name">English</span>
+        <span class="lang-native">English</span>
+      </button>
+      <button class="lang-opt" id="lopt-te" onclick="setLang('te')">
+        <span class="lang-flag">🇮🇳</span>
+        <span class="lang-name">Telugu</span>
+        <span class="lang-native">తెలుగు</span>
+      </button>
+      <button class="lang-opt" id="lopt-hi" onclick="setLang('hi')">
+        <span class="lang-flag">🇮🇳</span>
+        <span class="lang-name">Hindi</span>
+        <span class="lang-native">हिन्दी</span>
+      </button>
+      <button class="lang-opt" id="lopt-ta" onclick="setLang('ta')">
+        <span class="lang-flag">🇮🇳</span>
+        <span class="lang-name">Tamil</span>
+        <span class="lang-native">தமிழ்</span>
+      </button>
+    </div>
+    <button class="lang-close" onclick="closeLang()" id="langConfirm">✓ Confirm</button>
+  </div>
+</div>
+
+<div id="scroll">
+
+<!-- HOME -->
+<div id="s-home" class="scr on">
+  <div class="welcome">
+    <div class="wt" id="greet">నమస్కారం, Farmer! 👋</div>
+    <div class="ws" id="greetSub">Today is a great day to check your crops</div>
+    <div class="wp">🌡️ 34°C &nbsp; 💧 65% &nbsp; ☀️ Sunny</div>
+  </div>
+  <div class="sec" id="secQuick">Quick Actions</div>
+  <div class="qg">
+    <button class="qb" style="background:#e8f5e9" onclick="goTo('scanner')">
+      <span class="qi">📸</span><span class="ql" style="color:#1a3c2e" id="btnScan">Scan Crop</span>
+    </button>
+    <button class="qb" style="background:#e3f2fd" onclick="goTo('weather')">
+      <span class="qi">🌤️</span><span class="ql" style="color:#1565C0" id="btnWeather">Weather</span>
+    </button>
+    <button class="qb" style="background:#fff8e1" onclick="goTo('market')">
+      <span class="qi">💹</span><span class="ql" style="color:#c9971a" id="btnMarket">Market</span>
+    </button>
+  </div>
+  <div class="tc"><div class="tl" id="tipLabel">💡 DAILY FARMING TIP</div><div class="tt" id="tipEl">Loading...</div></div>
+  <div class="ac"><div class="at2" id="alertTitle">⚠️ Season Alert</div><div class="ab" id="alertText">Kharif sowing: June–July. Start soil prep now. Heavy rains expected next week.</div></div>
+  <div class="sec" id="secPrices">📊 Today's Top Prices</div>
+  <div class="pr"><span class="pi">🌾</span><span class="pn">Rice</span><div><div class="pv">₹2,180</div><div class="pc up">▲ 2.4%</div></div></div>
+  <div class="pr"><span class="pi">🌿</span><span class="pn">Wheat</span><div><div class="pv">₹2,275</div><div class="pc dn">▼ 1.2%</div></div></div>
+  <div class="pr"><span class="pi">🍅</span><span class="pn">Tomato</span><div><div class="pv">₹1,450</div><div class="pc up">▲ 8.7%</div></div></div>
+  <div class="pr"><span class="pi">🌽</span><span class="pn">Maize</span><div><div class="pv">₹1,950</div><div class="pc up">▲ 3.2%</div></div></div>
+  <button class="vb" onclick="goTo('market')" id="viewAllBtn">View All Prices →</button>
+</div>
+
+<!-- SCANNER -->
+<div id="s-scanner" class="scr">
+  <div id="scanSel">
+    <div style="font-size:20px;font-weight:800;margin-bottom:4px" id="scanTitle">📸 Crop Disease Scanner</div>
+    <div style="font-size:12px;color:#999;margin-bottom:18px" id="scanSub">Take a photo or tap a symptom color</div>
+    <img id="imgPrev" src="" alt="crop">
+    <div class="cr">
+      <button class="cb" style="background:linear-gradient(135deg,#1a3c2e,#52b788)" onclick="document.getElementById('camIn').click()">
+        <span class="ci">📷</span><span class="cl" id="btnCamera">Take Photo</span>
+      </button>
+      <button class="cb" style="background:linear-gradient(135deg,#1565C0,#42a5f5)" onclick="document.getElementById('fileIn').click()">
+        <span class="ci">🖼️</span><span class="cl" id="btnUpload">Upload Photo</span>
+      </button>
+    </div>
+    <input type="file" id="camIn" accept="image/*" capture="environment" style="display:none" onchange="handleFile(event)">
+    <input type="file" id="fileIn" accept="image/*" style="display:none" onchange="handleFile(event)">
+    <div class="od" id="orDivider">— OR SELECT SYMPTOM COLOR —</div>
+    <div class="cg">
+      <div class="cc" style="background:#fffde7;border-color:#f9c74f" onclick="doScan('yellow')">
+        <div class="cti">🟡 <span id="c1title">Yellow Leaves</span></div><div class="cde" id="c1desc">Yellowing, pale color</div>
+      </div>
+      <div class="cc" style="background:#fdf0e3;border-color:#a0522d" onclick="doScan('brown')">
+        <div class="cti">🟤 <span id="c2title">Brown Spots</span></div><div class="cde" id="c2desc">Spots, patches, blight</div>
+      </div>
+      <div class="cc" style="background:#f5f5f5;border-color:#bbb" onclick="doScan('white')">
+        <div class="cti">⚪ <span id="c3title">White Powder</span></div><div class="cde" id="c3desc">Powdery coating</div>
+      </div>
+      <div class="cc" style="background:#f0f0f0;border-color:#555" onclick="doScan('black')">
+        <div class="cti">⚫ <span id="c4title">Black/Dark</span></div><div class="cde" id="c4desc">Dark spots, smut</div>
+      </div>
+    </div>
+  </div>
+  <div id="scanAna" style="display:none">
+    <div class="abox">
+      <span class="aico">🔬</span>
+      <div class="ati" id="analyzingTitle">Analyzing your crop...</div>
+      <div class="asu" id="analyzingSub">Checking disease patterns</div>
+      <div class="pb"><div class="pf" id="pf"></div></div>
+    </div>
+  </div>
+  <div id="scanRes" style="display:none">
+    <div class="dc" id="dcrd">
+      <div class="dh">
+        <div style="flex:1"><div class="dl" id="diagLabel">DIAGNOSIS</div><div class="dn2" id="dname"></div></div>
+        <div class="sb" id="sbadge"></div>
+      </div>
+      <div class="sx"><div class="sxl" id="sympLabel">SYMPTOMS</div><div class="sxt" id="stxt"></div></div>
+      <div class="txl" id="treatLabel">💊 TREATMENT</div>
+      <div id="tlist"></div>
+      <div class="ub"><div class="ut" id="utxt"></div></div>
+    </div>
+    <div class="prc"><div class="prl" id="prevLabel">🛡️ PREVENTION</div><div class="prt" id="ptxt"></div></div>
+    <button class="aib" id="aiBtn" onclick="getAI()">🤖 <span id="aibtnTxt">Get AI Expert Advice</span></button>
+    <div class="acd" id="aiCrd"><div class="acl" id="aiCardLabel">🤖 AI EXPERT ADVICE</div><div class="act" id="aiTxt"></div></div>
+    <div class="hlc">
+      <div class="hlt" id="helpTitle">📞 Need More Help?</div>
+      <div class="hls" id="helpSub">Kisan Call Center (Free, 24/7)</div>
+      <div class="hln">1800-180-1551</div>
+    </div>
+    <button class="rb" onclick="resetScan()" id="scanAgain">🔄 Scan Another Crop</button>
+  </div>
+</div>
+
+<!-- WEATHER -->
+<div id="s-weather" class="scr">
+  <div class="wh">
+    <div class="wlo">📍 Telangana, India</div>
+    <div class="wm"><span class="wte">34°</span><span class="wco">Sunny ☀️</span></div>
+    <div class="wsg">
+      <div class="ws2"><span class="wsi">💧</span><span class="wsl" id="wHumidity">Humidity</span><span class="wsv">65%</span></div>
+      <div class="ws2"><span class="wsi">💨</span><span class="wsl" id="wWind">Wind</span><span class="wsv">12km/h</span></div>
+      <div class="ws2"><span class="wsi">🌧️</span><span class="wsl" id="wRain">Rain</span><span class="wsv">5%</span></div>
+    </div>
+    <div class="wad" id="wAdvice">🌾 Great day to spray pesticides — low wind &amp; no rain</div>
+  </div>
+  <div class="sec" id="sec7day">7-Day Forecast</div>
+  <div class="fr td"><div class="fd" id="wToday">Today</div><div class="fic">☀️</div><div class="fm"><div class="fra">5% rain</div><div class="fw">12 km/h</div></div><div class="ft"><div class="fh">34°</div><div class="fl">22°</div></div></div>
+  <div class="fr"><div class="fd">Tue</div><div class="fic">⛅</div><div class="fm"><div class="fra">20% rain</div><div class="fw">18 km/h</div></div><div class="ft"><div class="fh">31°</div><div class="fl">21°</div></div></div>
+  <div class="fr"><div class="fd">Wed</div><div class="fic">🌧️</div><div class="fm"><div class="fra">80% rain</div><div class="fw">25 km/h</div></div><div class="ft"><div class="fh">27°</div><div class="fl">19°</div></div></div>
+  <div class="fr"><div class="fd">Thu</div><div class="fic">🌦️</div><div class="fm"><div class="fra">45% rain</div><div class="fw">15 km/h</div></div><div class="ft"><div class="fh">29°</div><div class="fl">20°</div></div></div>
+  <div class="fr"><div class="fd">Fri</div><div class="fic">☀️</div><div class="fm"><div class="fra">10% rain</div><div class="fw">10 km/h</div></div><div class="ft"><div class="fh">33°</div><div class="fl">22°</div></div></div>
+  <div class="fr"><div class="fd">Sat</div><div class="fic">☀️</div><div class="fm"><div class="fra">5% rain</div><div class="fw">8 km/h</div></div><div class="ft"><div class="fh">35°</div><div class="fl">23°</div></div></div>
+  <div class="fr"><div class="fd">Sun</div><div class="fic">⛅</div><div class="fm"><div class="fra">30% rain</div><div class="fw">20 km/h</div></div><div class="ft"><div class="fh">30°</div><div class="fl">20°</div></div></div>
+  <div class="sec" id="secAdvisory">🌾 Farm Advisory</div>
+  <div class="ar"><span class="aic2">☀️</span><div class="atx"><span class="ady" id="adv1day">Today: </span><span id="adv1txt">Great day to spray pesticides. Low wind &amp; no rain.</span></div></div>
+  <div class="ar"><span class="aic2">⛅</span><div class="atx"><span class="ady">Tue: </span><span id="adv2txt">Check irrigation. Moderate evaporation today.</span></div></div>
+  <div class="ar"><span class="aic2">🌧️</span><div class="atx"><span class="ady">Wed: </span><span id="adv3txt">Heavy rain — avoid field work. Drain waterlogged areas.</span></div></div>
+  <div class="ar"><span class="aic2">🌦️</span><div class="atx"><span class="ady">Thu: </span><span id="adv4txt">Monitor soil moisture carefully after rain.</span></div></div>
+  <div class="ar"><span class="aic2">☀️</span><div class="atx"><span class="ady">Fri: </span><span id="adv5txt">Excellent conditions for harvesting mature crops.</span></div></div>
+  <div class="fn" id="wSource">🔄 Updated: Today 6:00 AM · Source: IMD</div>
+</div>
+
+<!-- MARKET -->
+<div id="s-market" class="scr">
+  <div class="sg">
+    <div class="sm" style="background:#e8f5e9;border-color:#52b788"><span class="smi">📈</span><span class="smv">6 crops</span><span class="sml" id="mRising">Rising</span></div>
+    <div class="sm" style="background:#ffeef0;border-color:#e63946"><span class="smi">📉</span><span class="smv">4 crops</span><span class="sml" id="mFalling">Falling</span></div>
+    <div class="sm" style="background:#fff8e1;border-color:#c9971a"><span class="smi">🏆</span><span class="smv">Tomato</span><span class="sml" id="mTopGainer">Top Gainer</span></div>
+  </div>
+  <div class="srb"><span>🔍</span><input type="text" id="srch" placeholder="Search crop..." oninput="renderCrops()"></div>
+  <div class="fg">
+    <button class="fb on" id="f-all" onclick="setFilt('all')">All Crops</button>
+    <button class="fb" id="f-rising" onclick="setFilt('rising')">📈 <span id="filtRising">Rising</span></button>
+    <button class="fb" id="f-falling" onclick="setFilt('falling')">📉 <span id="filtFalling">Falling</span></button>
+  </div>
+  <div class="sec" id="secAllPrices">All Crop Prices</div>
+  <div id="cropList"></div>
+  <div class="sec" id="secSellTips">💡 Selling Tips</div>
+  <div class="stp"><span class="sti">📦</span><span class="stt" id="tip1">Rice &amp; Maize prices rising — good time to sell stored stock.</span></div>
+  <div class="stp"><span class="sti">⏳</span><span class="stt" id="tip2">Tomato prices peaked — sell within 2 days for best returns.</span></div>
+  <div class="stp"><span class="sti">🚛</span><span class="stt" id="tip3">Compare prices at 2–3 nearby mandis before selling.</span></div>
+  <div class="fn" id="mSource">📊 Prices from AGMARKNET · Updated: Today 8:00 AM</div>
+</div>
+
+</div>
+
+<div class="bnav">
+  <button class="nt on" id="n-home" onclick="goTo('home')"><span class="ni">🏠</span><span class="nl" id="nav1">Home</span></button>
+  <button class="nt" id="n-scanner" onclick="goTo('scanner')"><span class="ni">📸</span><span class="nl" id="nav2">Scanner</span></button>
+  <button class="nt" id="n-weather" onclick="goTo('weather')"><span class="ni">🌤️</span><span class="nl" id="nav3">Weather</span></button>
+  <button class="nt" id="n-market" onclick="goTo('market');renderCrops()"><span class="ni">💹</span><span class="nl" id="nav4">Market</span></button>
+</div>
+</div>
+
+<script>
+// ── TRANSLATIONS ──────────────────────────────────────────────
+var T = {
+  en: {
+    tagline:'YOUR SMART FARMING PARTNER', season:'Kharif 2026',
+    greet:'Hello, Farmer! 👋', greetSub:'Today is a great day to check your crops',
+    secQuick:'Quick Actions', btnScan:'Scan Crop', btnWeather:'Weather', btnMarket:'Market',
+    tipLabel:'💡 DAILY FARMING TIP',
+    alertTitle:'⚠️ Season Alert', alertText:'Kharif sowing: June–July. Start soil prep now. Heavy rains expected next week.',
+    secPrices:'📊 Today\'s Top Prices', viewAll:'View All Prices →',
+    scanTitle:'📸 Crop Disease Scanner', scanSub:'Take a photo or tap a symptom color',
+    btnCamera:'Take Photo', btnUpload:'Upload Photo',
+    orDivider:'— OR SELECT SYMPTOM COLOR —',
+    c1title:'Yellow Leaves', c1desc:'Yellowing, pale color',
+    c2title:'Brown Spots', c2desc:'Spots, patches, blight',
+    c3title:'White Powder', c3desc:'Powdery coating',
+    c4title:'Black/Dark', c4desc:'Dark spots, smut',
+    analyzingTitle:'Analyzing your crop...', analyzingSub:'Checking disease patterns',
+    diagLabel:'DIAGNOSIS', sympLabel:'SYMPTOMS', treatLabel:'💊 TREATMENT',
+    prevLabel:'🛡️ PREVENTION', aibtntxt:'Get AI Expert Advice',
+    aiCardLabel:'🤖 AI EXPERT ADVICE',
+    helpTitle:'📞 Need More Help?', helpSub:'Kisan Call Center (Free, 24/7)',
+    scanAgain:'🔄 Scan Another Crop',
+    wHumidity:'Humidity', wWind:'Wind', wRain:'Rain',
+    wAdvice:'🌾 Great day to spray pesticides — low wind & no rain',
+    sec7day:'7-Day Forecast', secAdvisory:'🌾 Farm Advisory', wToday:'Today',
+    adv1txt:'Great day to spray pesticides. Low wind & no rain.',
+    adv2txt:'Check irrigation. Moderate evaporation today.',
+    adv3txt:'Heavy rain — avoid field work. Drain waterlogged areas.',
+    adv4txt:'Monitor soil moisture carefully after rain.',
+    adv5txt:'Excellent conditions for harvesting mature crops.',
+    wSource:'🔄 Updated: Today 6:00 AM · Source: IMD',
+    mRising:'Rising', mFalling:'Falling', mTopGainer:'Top Gainer',
+    filtRising:'Rising', filtFalling:'Falling',
+    secAllPrices:'All Crop Prices', secSellTips:'💡 Selling Tips',
+    tip1:'Rice & Maize prices rising — good time to sell stored stock.',
+    tip2:'Tomato prices peaked — sell within 2 days for best returns.',
+    tip3:'Compare prices at 2–3 nearby mandis before selling.',
+    mSource:'📊 Prices from AGMARKNET · Updated: Today 8:00 AM',
+    nav1:'Home', nav2:'Scanner', nav3:'Weather', nav4:'Market',
+    langTitle:'Choose Your Language', langSub:'Select your preferred language', langConfirm:'✓ Confirm',
+    srchPlaceholder:'Search crop...',
+    tips:['💧 Water crops early morning (5–8 AM) to reduce evaporation by 30%','🐛 Install pheromone traps to monitor pest population before damage','🌱 Apply neem cake @ 250 kg/acre as organic pest repellent','📊 Keep a daily farm diary — track inputs, weather and yields','🌿 Mulching with dry leaves saves 40% water and suppresses weeds','🧪 Test your soil every 3 years to know exact nutrient needs']
+  },
+  te: {
+    tagline:'మీ స్మార్ట్ వ్యవసాయ భాగస్వామి', season:'ఖరీఫ్ 2026',
+    greet:'నమస్కారం, రైతు! 👋', greetSub:'ఈరోజు మీ పంటలను తనిఖీ చేయడానికి మంచి రోజు',
+    secQuick:'త్వరిత చర్యలు', btnScan:'పంట స్కాన్', btnWeather:'వాతావరణం', btnMarket:'మార్కెట్',
+    tipLabel:'💡 నేటి వ్యవసాయ చిట్కా',
+    alertTitle:'⚠️ సీజన్ హెచ్చరిక', alertText:'ఖరీఫ్ విత్తనం: జూన్–జూలై. ఇప్పుడే నేల సిద్ధం చేయండి. వచ్చే వారం భారీ వర్షాలు.',
+    secPrices:'📊 నేటి ధరలు', viewAll:'అన్ని ధరలు చూడండి →',
+    scanTitle:'📸 పంట వ్యాధి స్కానర్', scanSub:'ఫోటో తీయండి లేదా లక్షణ రంగు నొక్కండి',
+    btnCamera:'ఫోటో తీయండి', btnUpload:'ఫోటో అప్‌లోడ్',
+    orDivider:'— లేదా లక్షణ రంగు ఎంచుకోండి —',
+    c1title:'పచ్చని ఆకులు', c1desc:'పసుపు రంగు, లేత రంగు',
+    c2title:'గోధుమ మచ్చలు', c2desc:'మచ్చలు, మైళ్ళు',
+    c3title:'తెల్లని పొడి', c3desc:'తెల్లని పొడి పూత',
+    c4title:'నల్లని/చీకటి', c4desc:'నల్లని మచ్చలు',
+    analyzingTitle:'మీ పంటను విశ్లేషిస్తోంది...', analyzingSub:'వ్యాధి నమూనాలు తనిఖీ చేస్తోంది',
+    diagLabel:'రోగ నిర్ధారణ', sympLabel:'లక్షణాలు', treatLabel:'💊 చికిత్స',
+    prevLabel:'🛡️ నివారణ', aibtntxt:'AI నిపుణుల సలహా పొందండి',
+    aiCardLabel:'🤖 AI నిపుణుల సలహా',
+    helpTitle:'📞 మరింత సహాయం కావాలా?', helpSub:'కిసాన్ కాల్ సెంటర్ (ఉచిత, 24/7)',
+    scanAgain:'🔄 మరొక పంట స్కాన్ చేయండి',
+    wHumidity:'తేమ', wWind:'గాలి', wRain:'వర్షం',
+    wAdvice:'🌾 పురుగుమందులు చల్లడానికి మంచి రోజు — తక్కువ గాలి & వర్షం లేదు',
+    sec7day:'7 రోజుల అంచనా', secAdvisory:'🌾 వ్యవసాయ సలహా', wToday:'ఈరోజు',
+    adv1txt:'పురుగుమందులు చల్లడానికి మంచి రోజు. తక్కువ గాలి & వర్షం లేదు.',
+    adv2txt:'నీటిపారుదల తనిఖీ చేయండి. మితమైన ఆవిరి.',
+    adv3txt:'భారీ వర్షం — పొలం పనులు మానుకోండి. నీరు నిల్వ ఉన్న ప్రాంతాలు తీయండి.',
+    adv4txt:'వర్షం తర్వాత నేల తేమను జాగ్రత్తగా పర్యవేక్షించండి.',
+    adv5txt:'పండిన పంటలు కోయడానికి అద్భుతమైన పరిస్థితులు.',
+    wSource:'🔄 నవీకరించబడింది: ఈరోజు 6:00 AM · మూలం: IMD',
+    mRising:'పెరుగుతోంది', mFalling:'తగ్గుతోంది', mTopGainer:'అత్యధిక లాభం',
+    filtRising:'పెరుగుతోంది', filtFalling:'తగ్గుతోంది',
+    secAllPrices:'అన్ని పంట ధరలు', secSellTips:'💡 అమ్మకపు చిట్కాలు',
+    tip1:'వరి & మొక్కజొన్న ధరలు పెరుగుతున్నాయి — నిల్వ అమ్మడానికి మంచి సమయం.',
+    tip2:'టమాటా ధరలు గరిష్టంగా ఉన్నాయి — 2 రోజుల్లో అమ్మండి.',
+    tip3:'అమ్మడానికి ముందు 2–3 మందీలలో ధరలు పోల్చండి.',
+    mSource:'📊 AGMARKNET నుండి ధరలు · నవీకరించబడింది: ఈరోజు 8:00 AM',
+    nav1:'హోమ్', nav2:'స్కానర్', nav3:'వాతావరణం', nav4:'మార్కెట్',
+    langTitle:'భాష ఎంచుకోండి', langSub:'మీకు నచ్చిన భాష ఎంచుకోండి', langConfirm:'✓ నిర్ధారించు',
+    srchPlaceholder:'పంట వెతకండి...',
+    tips:['💧 తెల్లవారుజామున (5–8 AM) నీరు పెట్టండి — ఆవిరి 30% తగ్గుతుంది','🐛 పురుగుల సంఖ్య పర్యవేక్షించడానికి ఫెరోమోన్ ఉచ్చులు పెట్టండి','🌱 వేప పిండి @ 250 కిలో/ఎకరానికి వేయండి','📊 రోజువారీ వ్యవసాయ డైరీ నిర్వహించండి','🌿 పొడి ఆకులతో మల్చింగ్ — 40% నీరు ఆదా','🧪 ప్రతి 3 సంవత్సరాలకు నేల పరీక్ష చేయించుకోండి']
+  },
+  hi: {
+    tagline:'आपका स्मार्ट खेती साथी', season:'खरीफ 2026',
+    greet:'नमस्ते, किसान! 👋', greetSub:'आज अपनी फसल जांचने का अच्छा दिन है',
+    secQuick:'त्वरित कार्य', btnScan:'फसल स्कैन', btnWeather:'मौसम', btnMarket:'बाज़ार',
+    tipLabel:'💡 आज की खेती टिप',
+    alertTitle:'⚠️ मौसम चेतावनी', alertText:'खरीफ बुवाई: जून–जुलाई। अभी मिट्टी तैयार करें। अगले हफ्ते भारी बारिश की उम्मीद।',
+    secPrices:'📊 आज के भाव', viewAll:'सभी भाव देखें →',
+    scanTitle:'📸 फसल रोग स्कैनर', scanSub:'फोटो लें या लक्षण का रंग चुनें',
+    btnCamera:'फोटो लें', btnUpload:'फोटो अपलोड',
+    orDivider:'— या लक्षण का रंग चुनें —',
+    c1title:'पीली पत्तियां', c1desc:'पीलापन, हल्का रंग',
+    c2title:'भूरे धब्बे', c2desc:'धब्बे, झुलसा रोग',
+    c3title:'सफेद पाउडर', c3desc:'सफेद पाउडर की परत',
+    c4title:'काला/गहरा', c4desc:'काले धब्बे, कंड',
+    analyzingTitle:'आपकी फसल का विश्लेषण हो रहा है...', analyzingSub:'रोग पैटर्न जांच रहे हैं',
+    diagLabel:'निदान', sympLabel:'लक्षण', treatLabel:'💊 उपचार',
+    prevLabel:'🛡️ रोकथाम', aibtntxt:'AI विशेषज्ञ सलाह पाएं',
+    aiCardLabel:'🤖 AI विशेषज्ञ सलाह',
+    helpTitle:'📞 और मदद चाहिए?', helpSub:'किसान कॉल सेंटर (मुफ्त, 24/7)',
+    scanAgain:'🔄 दूसरी फसल स्कैन करें',
+    wHumidity:'नमी', wWind:'हवा', wRain:'बारिश',
+    wAdvice:'🌾 कीटनाशक छिड़काव के लिए अच्छा दिन — कम हवा और बारिश नहीं',
+    sec7day:'7 दिन का पूर्वानुमान', secAdvisory:'🌾 खेती सलाह', wToday:'आज',
+    adv1txt:'कीटनाशक छिड़काव के लिए अच्छा दिन। कम हवा और बारिश नहीं।',
+    adv2txt:'सिंचाई जांचें। मध्यम वाष्पीकरण।',
+    adv3txt:'भारी बारिश — खेत के काम से बचें। जलभराव वाली जगह खाली करें।',
+    adv4txt:'बारिश के बाद मिट्टी की नमी ध्यान से देखें।',
+    adv5txt:'पकी फसल काटने के लिए बेहतरीन मौसम।',
+    wSource:'🔄 अपडेट: आज सुबह 6:00 बजे · स्रोत: IMD',
+    mRising:'बढ़ रहा है', mFalling:'घट रहा है', mTopGainer:'सबसे ज्यादा बढ़त',
+    filtRising:'बढ़ रहा है', filtFalling:'घट रहा है',
+    secAllPrices:'सभी फसल भाव', secSellTips:'💡 बेचने के टिप्स',
+    tip1:'चावल और मक्का के भाव बढ़ रहे हैं — अभी बेचने का अच्छा समय।',
+    tip2:'टमाटर का भाव चरम पर है — 2 दिन में बेचें।',
+    tip3:'बेचने से पहले 2–3 मंडियों में भाव की तुलना करें।',
+    mSource:'📊 AGMARKNET से भाव · अपडेट: आज सुबह 8:00 बजे',
+    nav1:'होम', nav2:'स्कैनर', nav3:'मौसम', nav4:'बाज़ार',
+    langTitle:'भाषा चुनें', langSub:'अपनी पसंदीदा भाषा चुनें', langConfirm:'✓ पुष्टि करें',
+    srchPlaceholder:'फसल खोजें...',
+    tips:['💧 सुबह 5–8 बजे सिंचाई करें — 30% पानी की बचत','🐛 फेरोमोन ट्रैप लगाएं — कीट नियंत्रण के लिए','🌱 नीम की खली @ 250 किलो/एकड़ डालें','📊 रोज खेती डायरी लिखें — बेहतर योजना के लिए','🌿 सूखे पत्तों से मल्चिंग — 40% पानी की बचत','🧪 हर 3 साल में मिट्टी की जांच कराएं']
+  },
+  ta: {
+    tagline:'உங்கள் ஸ்மார்ட் விவசாய துணை', season:'கரிஃப் 2026',
+    greet:'வணக்கம், விவசாயி! 👋', greetSub:'இன்று உங்கள் பயிர்களை சரிபார்க்க நல்ல நாள்',
+    secQuick:'விரைவு செயல்கள்', btnScan:'பயிர் ஸ்கேன்', btnWeather:'வானிலை', btnMarket:'சந்தை',
+    tipLabel:'💡 இன்றைய விவசாய குறிப்பு',
+    alertTitle:'⚠️ பருவகால எச்சரிக்கை', alertText:'கரிஃப் விதைப்பு: ஜூன்–ஜூலை. இப்போதே மண் தயார் செய்யுங்கள். அடுத்த வாரம் கனமழை.',
+    secPrices:'📊 இன்றைய விலைகள்', viewAll:'அனைத்து விலைகளும் →',
+    scanTitle:'📸 பயிர் நோய் ஸ்கேனர்', scanSub:'புகைப்படம் எடுக்கவும் அல்லது அறிகுறி நிறத்தை தொடவும்',
+    btnCamera:'புகைப்படம் எடு', btnUpload:'புகைப்படம் பதிவேற்று',
+    orDivider:'— அல்லது அறிகுறி நிறம் தேர்வு செய்யுங்கள் —',
+    c1title:'மஞ்சள் இலைகள்', c1desc:'மஞ்சள் நிறம், வெளிர் நிறம்',
+    c2title:'பழுப்பு புள்ளிகள்', c2desc:'புள்ளிகள், தழுவல்',
+    c3title:'வெள்ளை தூள்', c3desc:'வெள்ளை தூள் பூச்சு',
+    c4title:'கருப்பு/இருண்ட', c4desc:'கருப்பு புள்ளிகள்',
+    analyzingTitle:'உங்கள் பயிரை ஆய்வு செய்கிறோம்...', analyzingSub:'நோய் வடிவங்களை சரிபார்க்கிறோம்',
+    diagLabel:'நோய் கண்டறிதல்', sympLabel:'அறிகுறிகள்', treatLabel:'💊 சிகிச்சை',
+    prevLabel:'🛡️ தடுப்பு', aibtntxt:'AI நிபுணர் ஆலோசனை பெறுங்கள்',
+    aiCardLabel:'🤖 AI நிபுணர் ஆலோசனை',
+    helpTitle:'📞 மேலும் உதவி வேண்டுமா?', helpSub:'கிசான் கால் சென்டர் (இலவசம், 24/7)',
+    scanAgain:'🔄 மற்றொரு பயிரை ஸ்கேன் செய்யுங்கள்',
+    wHumidity:'ஈரப்பதம்', wWind:'காற்று', wRain:'மழை',
+    wAdvice:'🌾 பூச்சிக்கொல்லி தெளிக்க நல்ல நாள் — குறைந்த காற்று & மழை இல்லை',
+    sec7day:'7 நாள் முன்னறிவிப்பு', secAdvisory:'🌾 விவசாய ஆலோசனை', wToday:'இன்று',
+    adv1txt:'பூச்சிக்கொல்லி தெளிக்க நல்ல நாள். குறைந்த காற்று & மழை இல்லை.',
+    adv2txt:'நீர்ப்பாசனம் சரிபாருங்கள். மிதமான ஆவியாதல்.',
+    adv3txt:'கனமழை — வயல் வேலைகளை தவிருங்கள். நீர் தேங்கிய பகுதிகளை வடிகட்டுங்கள்.',
+    adv4txt:'மழைக்குப் பிறகு மண் ஈரப்பதத்தை கவனமாக கண்காணியுங்கள்.',
+    adv5txt:'பக்குவமான பயிர்களை அறுவடை செய்ய சிறந்த நிலைமைகள்.',
+    wSource:'🔄 புதுப்பிக்கப்பட்டது: இன்று காலை 6:00 · ஆதாரம்: IMD',
+    mRising:'உயர்கிறது', mFalling:'குறைகிறது', mTopGainer:'அதிக லாபம்',
+    filtRising:'உயர்கிறது', filtFalling:'குறைகிறது',
+    secAllPrices:'அனைத்து பயிர் விலைகள்', secSellTips:'💡 விற்பனை குறிப்புகள்',
+    tip1:'அரிசி & சோளம் விலை உயர்கிறது — சேமிப்பு விற்க நல்ல நேரம்.',
+    tip2:'தக்காளி விலை உச்சத்தில் — 2 நாளில் விற்றுவிடுங்கள்.',
+    tip3:'விற்பனைக்கு முன் 2–3 சந்தைகளில் விலையை ஒப்பிடுங்கள்.',
+    mSource:'📊 AGMARKNET இலிருந்து விலைகள் · புதுப்பிக்கப்பட்டது: இன்று காலை 8:00',
+    nav1:'முகப்பு', nav2:'ஸ்கேனர்', nav3:'வானிலை', nav4:'சந்தை',
+    langTitle:'மொழியை தேர்வு செய்யுங்கள்', langSub:'உங்கள் விருப்பமான மொழியை தேர்வு செய்யுங்கள்', langConfirm:'✓ உறுதிப்படுத்து',
+    srchPlaceholder:'பயிர் தேடுங்கள்...',
+    tips:['💧 காலை 5–8 மணிக்கு நீர் பாய்ச்சுங்கள் — 30% நீர் சேமிப்பு','🐛 ஃபெரோமோன் பொறிகள் வையுங்கள் — பூச்சி கண்காணிப்பு','🌱 வேப்பம் புண்ணாக்கு @ 250 கிலோ/ஏக்கர் போடுங்கள்','📊 தினசரி விவசாய நாட்குறிப்பு வையுங்கள்','🌿 உலர் இலை மல்ச்சிங் — 40% நீர் சேமிப்பு','🧪 ஒவ்வொரு 3 ஆண்டுகளுக்கும் மண் பரிசோதனை செய்யுங்கள்']
+  }
+};
+
+var curLang = 'te'; // default Telugu
+var curScreen = 'home', filt = 'all', disease = null, tipIdx = 0;
+
+var crops = [
+  {n:'Rice',i:'🌾',p:2180,u:'per quintal',c:2.4,m:'Warangal Mandi'},
+  {n:'Wheat',i:'🌿',p:2275,u:'per quintal',c:-1.2,m:'Delhi APMC'},
+  {n:'Tomato',i:'🍅',p:1450,u:'per quintal',c:8.7,m:'Nashik Mandi'},
+  {n:'Onion',i:'🧅',p:890,u:'per quintal',c:-3.5,m:'Lasalgaon'},
+  {n:'Cotton',i:'🪴',p:6800,u:'per quintal',c:1.1,m:'Kurnool Mandi'},
+  {n:'Sugarcane',i:'🌱',p:315,u:'per quintal',c:0.5,m:'Pune APMC'},
+  {n:'Maize',i:'🌽',p:1950,u:'per quintal',c:3.2,m:'Davangere'},
+  {n:'Soybean',i:'🫘',p:4200,u:'per quintal',c:-0.8,m:'Indore Mandi'},
+  {n:'Groundnut',i:'🥜',p:5500,u:'per quintal',c:2.1,m:'Junagadh'},
+  {n:'Chilli',i:'🌶️',p:8200,u:'per quintal',c:-1.5,m:'Guntur Mandi'}
+];
+
+var diseases = {
+  yellow:{name:'Nitrogen Deficiency / Yellow Mosaic Virus',sev:'Moderate',sc:'#f4a261',sym:'Yellowing of leaves from older leaves, pale green color, stunted growth',tx:['Apply Urea (46% N) @ 25 kg/acre','Spray 2% DAP solution on leaves','Check soil pH (ideal 6.0–7.0)','Ensure proper field drainage'],prev:'Use resistant varieties, crop rotation every 2 years',urg:'⏰ Act within 5–7 days'},
+  brown:{name:'Leaf Blight / Brown Spot Disease',sev:'High',sc:'#e76f51',sym:'Brown circular spots with yellow halo, premature leaf drop, 40% yield loss possible',tx:['Spray Mancozeb 75% WP @ 2.5 g/litre','Apply Carbendazim 50% WP @ 1 g/litre','Remove and burn infected leaves','Switch to drip irrigation'],prev:'Treat seeds before sowing, maintain 20–25cm plant spacing',urg:'⏰ Act within 2–3 days'},
+  white:{name:'Powdery Mildew / White Rust',sev:'High',sc:'#e76f51',sym:'White powdery coating on leaves, distorted new growth, early leaf fall',tx:['Spray Sulphur 80% WP @ 3 g/litre','Apply Triadimefon 25% WP @ 0.5 g/litre','Increase plant spacing for airflow','Stop excess nitrogen fertilizer'],prev:'Use certified disease-free seeds, remove crop residue',urg:'⏰ Act within 3–4 days'},
+  black:{name:'Smut / Sooty Mold Disease',sev:'Very High',sc:'#e63946',sym:'Black powdery masses on grains, dark patches, total crop loss possible',tx:['Seed treatment: Thiram 75% WS @ 3g/kg','Spray Propiconazole 25% EC @ 1 ml/litre','Burn all affected crop debris','Contact agriculture officer IMMEDIATELY'],prev:'Use certified resistant varieties only',urg:'⚠️ URGENT — Act TODAY'}
+};
+
+function applyLang(l) {
+  var t = T[l];
+  var ids = ['tagline','greet','greetSub','secQuick','btnScan','btnWeather','btnMarket','tipLabel','alertTitle','alertText','secPrices','viewAllBtn','scanTitle','scanSub','btnCamera','btnUpload','orDivider','c1title','c1desc','c2title','c2desc','c3title','c3desc','c4title','c4desc','analyzingTitle','analyzingSub','diagLabel','sympLabel','treatLabel','prevLabel','aibtntxt','aiCardLabel','helpTitle','helpSub','scanAgain','wHumidity','wWind','wRain','wAdvice','sec7day','secAdvisory','wToday','adv1txt','adv2txt','adv3txt','adv4txt','adv5txt','wSource','mRising','mFalling','mTopGainer','filtRising','filtFalling','secAllPrices','secSellTips','tip1','tip2','tip3','mSource','nav1','nav2','nav3','nav4','langTitle','langSub','langConfirm','seasonTxt'];
+  ids.forEach(function(id){
+    var el = document.getElementById(id);
+    var key = id === 'seasonTxt' ? 'season' : id === 'viewAllBtn' ? 'viewAll' : id;
+    if(el && t[key] !== undefined) el.textContent = t[key];
+  });
+  document.getElementById('srch').placeholder = t.srchPlaceholder;
+  document.getElementById('curLangLabel').textContent = l.toUpperCase();
+  tipIdx = 0;
+  rotateTip();
+}
+
+// LANGUAGE MODAL
+function openLang() {
+  document.getElementById('langOverlay').classList.add('show');
+  ['en','te','hi','ta'].forEach(function(l){
+    document.getElementById('lopt-'+l).classList.toggle('selected', l===curLang);
+  });
+}
+function closeLang() {
+  document.getElementById('langOverlay').classList.remove('show');
+}
+function closeLangOutside(e) {
+  if(e.target === document.getElementById('langOverlay')) closeLang();
+}
+function setLang(l) {
+  curLang = l;
+  ['en','te','hi','ta'].forEach(function(x){
+    document.getElementById('lopt-'+x).classList.toggle('selected', x===l);
+  });
+  applyLang(l);
+}
+
+// NAVIGATION
+function goTo(id) {
+  document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on')});
+  document.querySelectorAll('.nt').forEach(function(b){b.classList.remove('on')});
+  document.getElementById('s-'+id).classList.add('on');
+  document.getElementById('n-'+id).classList.add('on');
+  document.getElementById('scroll').scrollTop = 0;
+  curScreen = id;
+  if(id==='market') renderCrops();
+}
+
+// TIPS
+var tipEl = document.getElementById('tipEl');
+function rotateTip(){
+  var t = T[curLang];
+  tipEl.style.opacity='0';
+  setTimeout(function(){
+    tipEl.textContent = t.tips[tipIdx];
+    tipEl.style.opacity='1';
+    tipIdx = (tipIdx+1) % t.tips.length;
+  }, 300);
+}
+tipEl.style.transition='opacity .3s';
+
+// SCANNER
+function doScan(key){
+  disease=diseases[key];
+  document.getElementById('scanSel').style.display='none';
+  document.getElementById('scanAna').style.display='block';
+  document.getElementById('scanRes').style.display='none';
+  var pf=document.getElementById('pf');
+  pf.style.width='0';
+  setTimeout(function(){pf.style.width='100%';},30);
+  setTimeout(showRes,2300);
+}
+function showRes(){
+  var d=disease;
+  document.getElementById('scanAna').style.display='none';
+  document.getElementById('scanRes').style.display='block';
+  document.getElementById('dname').textContent=d.name;
+  var b=document.getElementById('sbadge');
+  b.textContent=d.sev; b.style.background=d.sc;
+  document.getElementById('stxt').textContent=d.sym;
+  document.getElementById('utxt').textContent=d.urg;
+  document.getElementById('ptxt').textContent=d.prev;
+  document.getElementById('dcrd').style.borderColor=d.sc;
+  document.getElementById('tlist').innerHTML=d.tx.map(function(t,i){
+    return '<div class="ti"><span class="tn">'+(i+1)+'.</span><span class="tt2">'+t+'</span></div>';
+  }).join('');
+  document.getElementById('aiCrd').style.display='none';
+  var aiBtn=document.getElementById('aiBtn');
+  aiBtn.innerHTML='🤖 <span id="aibtntxt">'+T[curLang].aibtntxt+'</span>';
+  aiBtn.disabled=false;
+  document.getElementById('scroll').scrollTop=0;
+}
+function resetScan(){
+  document.getElementById('scanSel').style.display='block';
+  document.getElementById('scanAna').style.display='none';
+  document.getElementById('scanRes').style.display='none';
+  document.getElementById('imgPrev').style.display='none';
+  document.getElementById('aiCrd').style.display='none';
+  disease=null;
+  document.getElementById('scroll').scrollTop=0;
+}
+function handleFile(e){
+  var f=e.target.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(ev){
+    var img=document.getElementById('imgPrev');
+    img.src=ev.target.result; img.style.display='block';
+    setTimeout(function(){doScan('brown');},600);
+  };
+  r.readAsDataURL(f); e.target.value='';
+}
+function getAI(){
+  if(!disease) return;
+  var btn=document.getElementById('aiBtn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spin"></span>'+T[curLang].aibtntxt+'...';
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:'You are an expert agricultural advisor in India. Crop diagnosed with: '+disease.name+'. Give SHORT 3-step emergency action plan in simple '+T[curLang].nav1+' language for a village farmer. Use emojis. Under 120 words. Name exact products with dosages. Reply in the same language as: '+curLang}]})
+  }).then(function(r){return r.json();}).then(function(data){
+    var txt=(data.content||[]).map(function(i){return i.text||'';}).join('\n')||'Please consult your nearest agriculture officer.';
+    document.getElementById('aiTxt').textContent=txt;
+    document.getElementById('aiCrd').style.display='block';
+    btn.innerHTML='🤖 <span id="aibtntxt">'+T[curLang].aibtntxt+'</span>';
+    btn.disabled=false;
+  }).catch(function(){
+    document.getElementById('aiTxt').textContent='🌾 1800-180-1551';
+    document.getElementById('aiCrd').style.display='block';
+    btn.innerHTML='🤖 <span id="aibtntxt">'+T[curLang].aibtntxt+'</span>';
+    btn.disabled=false;
+  });
+}
+
+// MARKET
+function setFilt(f){
+  filt=f;
+  ['all','rising','falling'].forEach(function(x){document.getElementById('f-'+x).classList.remove('on');});
+  document.getElementById('f-'+f).classList.add('on');
+  renderCrops();
+}
+function renderCrops(){
+  var q=(document.getElementById('srch').value||'').toLowerCase();
+  var list=crops.filter(function(c){
+    var ms=c.n.toLowerCase().indexOf(q)>=0;
+    if(filt==='rising') return ms&&c.c>0;
+    if(filt==='falling') return ms&&c.c<0;
+    return ms;
+  });
+  if(!list.length){document.getElementById('cropList').innerHTML='<div style="text-align:center;padding:30px;color:#bbb"><div style="font-size:36px">🔍</div><div style="margin-top:8px">No crops found</div></div>';return;}
+  document.getElementById('cropList').innerHTML=list.map(function(c){
+    var bc=c.c>0?'#1a3c2e':'#e63946';
+    var bg=c.c>0?'#e8f5e9':'#ffeef0';
+    var tc=c.c>0?'#1a7a40':'#e63946';
+    var ar=c.c>0?'▲':'▼';
+    return '<div class="mc" style="border-left-color:'+bc+'"><span class="mci">'+c.i+'</span><div class="mcm"><div class="mcc">'+c.n+'</div><div class="mck">📍 '+c.m+'</div></div><div class="mcr"><div class="mcp">₹'+c.p.toLocaleString()+'</div><div class="mcu">'+c.u+'</div><span class="mch" style="background:'+bg+';color:'+tc+'">'+ar+' '+Math.abs(c.c)+'%</span></div></div>';
+  }).join('');
+}
+
+// INIT
+applyLang(curLang);
+setInterval(rotateTip, 4500);
+renderCrops();
+</script>
+</body>
+</html>
